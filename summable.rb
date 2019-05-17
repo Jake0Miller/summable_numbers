@@ -2,15 +2,15 @@ require 'benchmark'
 
 @numbers = [9, 1, -2, 6, 10, -5, -3, -1, -4, 8, 4, 5, 7, 0, 3, 2]
 @numbers = []
-3_000_000.times { @numbers << rand(1..100) }
+5_000_000.times { @numbers << rand(1..100) }
 
 def find_summing_numbers_with_hash(target)
   answer_hash = {}
   @numbers.each do |num|
-    if !answer_hash[num].nil?
-      return [num,answer_hash[num]]
-    else
+    if answer_hash[num].nil?
       answer_hash[target-num] = num
+    else
+      return [num,answer_hash[num]]
     end
   end
   return [nil,nil]
@@ -78,6 +78,17 @@ p find_summing_numbers_with_random_sample(13)
 p find_summing_numbers_with_random_sample(16)
 p find_summing_numbers_with_random_sample(50)
 
+def find_summing_numbers_with_enum(target)
+  @numbers.combination(2).find do |x,y|
+    target = x + y
+  end
+end
+
+p "Enum"
+p find_summing_numbers_with_enum(13)
+p find_summing_numbers_with_enum(16)
+p find_summing_numbers_with_enum(50)
+
 Benchmark.bm(12) do |b|
   b.report("hash") {
     find_summing_numbers_with_hash(13)
@@ -101,5 +112,11 @@ Benchmark.bm(12) do |b|
     find_summing_numbers_with_random_sample(13)
     find_summing_numbers_with_random_sample(16)
     find_summing_numbers_with_random_sample(50)
+  }
+
+  b.report("enum") {
+    find_summing_numbers_with_enum(13)
+    find_summing_numbers_with_enum(16)
+    find_summing_numbers_with_enum(50)
   }
 end
